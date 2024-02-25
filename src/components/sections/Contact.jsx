@@ -125,28 +125,40 @@ const ContactButton = styled.input`
   font-weight: 600;
 `;
 
+
 const Contact = () => {
   const form = useRef();
 
-  // Define the handleSubmit function here
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    // Load reCAPTCHA
+    const script = document.createElement("script");
+    script.src = "https://www.google.com/recaptcha/api.js?render=6LeL2n4pAAAAAN0CyIHXftfuwlK_YCPCGx2xUO0t";
+    document.body.appendChild(script);
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
 
-    // Here you can add your form submission logic, such as sending an email with EmailJS
-    emailjs.sendForm(
-      "service_2qyol6t",
-      "template_htym353",
-      form.current,
-      "DBhmRP-VpzeRyIpLN"
-    ).then(
-      (result) => {
-        alert("Message Sent");
-        form.current.reset(); // Reset the form after successful submission
-      },
-      (error) => {
-        alert(error.text); // Show an error message if the submission fails
-      }
-    );
+    window.grecaptcha.ready(async () => {
+      const token = await window.grecaptcha.execute('6LeL2n4pAAAAAN0CyIHXftfuwlK_YCPCGx2xUO0t', { action: 'submit' });
+      // Append the token to your form data or include it in your EmailJS sendForm call
+      form.current['g-recaptcha-response'].value = token;
+
+      emailjs.sendForm(
+        "service_2qyol6t",
+        "template_htym353",
+        form.current,
+        "DBhmRP-VpzeRyIpLN"
+      ).then(
+        (result) => {
+          alert("Message Sent");
+          form.current.reset(); // Reset the form after successful submission
+        },
+        (error) => {
+          alert(error.text); // Show an error message if the submission fails
+        }
+      );
+    });
   };
 
   return (
@@ -160,6 +172,8 @@ const Contact = () => {
           <ContactInput placeholder="Your Name" name="from_name" />
           <ContactInput placeholder="Subject" name="subject" />
           <ContactInputMessage placeholder="Message" name="message" rows={4} />
+          {/* Hidden input for reCAPTCHA response */}
+          <input type="hidden" name="g-recaptcha-response" />
           <ContactButton type="submit" value="Send" />
         </ContactForm>
       </Wrapper>
