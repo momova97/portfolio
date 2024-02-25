@@ -128,49 +128,45 @@ const ContactButton = styled.input`
 const Contact = () => {
   const form = useRef();
 
+  // Define the handleSubmit function here
   const handleSubmit = (e) => {
-    e.preventDefault();
-    emailjs
-      .sendForm(
-        "service_2qyol6t",
-        "template_htym353",
-        form.current,
-        "DBhmRP-VpzeRyIpLN"
-      )
-      .then(
-        (result) => {
-          alert("Message Sent");
-          form.current.reset();
-        },
-        (error) => {
-          alert(error);
-        }
-      );
+    e.preventDefault(); // Prevent the default form submission behavior
+
+    // Here you can add your form submission logic, such as sending an email with EmailJS
+    emailjs.sendForm(
+      "service_2qyol6t",
+      "template_htym353",
+      form.current,
+      "DBhmRP-VpzeRyIpLN"
+    ).then(
+      (result) => {
+        alert("Message Sent");
+        form.current.reset(); // Reset the form after successful submission
+      },
+      (error) => {
+        alert(error.text); // Show an error message if the submission fails
+      }
+    );
   };
 
   return (
     <Container>
       <Wrapper>
-        
         <Title>Contact</Title>
-        <Desc>
-          Feel free to reach out to me for any questions or opportunities!
-        </Desc>
-        <ContactForm onSubmit={handleSubmit}>
+        <Desc>Feel free to reach out to me for any questions or opportunities!</Desc>
+        <ContactForm ref={form} onSubmit={handleSubmit}>
           <ContactTitle>Email Me 🚀</ContactTitle>
           <ContactInput placeholder="Your Email" name="from_email" />
           <ContactInput placeholder="Your Name" name="from_name" />
           <ContactInput placeholder="Subject" name="subject" />
           <ContactInputMessage placeholder="Message" name="message" rows={4} />
-          
-          {/* Place the reCAPTCHA div here, right before the submit button */}
-          <div className="g-recaptcha" data-sitekey="6LeL2n4pAAAAAN0CyIHXftfuwlK_YCPCGx2xUO0t"></div>
-          
           <ContactButton type="submit" value="Send" />
-</ContactForm>
+        </ContactForm>
       </Wrapper>
     </Container>
   );
 };
 
 export default Contact;
+
+
